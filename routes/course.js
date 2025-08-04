@@ -1,13 +1,11 @@
 const { Router } = require("express");
-const { userMiddleware } = require("../middleware/user");
-const { purchaseModel, courseModel } = require("../db")
+const { userMiddleware } = require("../middleware/userMiddlewares");
+const { purchaseModel, courseModel } = require("../database")
 const courseRouter = Router();
 
 courseRouter.post("/purchase", userMiddleware, async function(req, res) {
-    const userId = req.userId;
+   const userId = req.userId;
     const courseId = req.body.courseId;
-
-    // should check that the user has actually paid the price
     await purchaseModel.create({
         userId,
         courseId
@@ -19,8 +17,7 @@ courseRouter.post("/purchase", userMiddleware, async function(req, res) {
 })
 
 courseRouter.get("/preview", async function(req, res) {
-    
-    const courses = await courseModel.find({});
+     const courses = await courseModel.find({});
 
     res.json({
         courses
