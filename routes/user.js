@@ -76,7 +76,7 @@ userRouter.post('/signin', async function (req, res) {
     res.status(500).json({ error: "Error signing in" });
   }
 });
-
+//Will display all the courses the user purchases
 userRouter.get("/purchases", async function (req, res) {
   try{
     const userId = req.userId;
