@@ -1,12 +1,11 @@
+require('dotenv').config();
 const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { z } = require("zod");
-
-const { JWT_SECRET } = require("config.js");
 const { userModel } = require("../database");
-
 const userRouter = Router();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Signup Route
 userRouter.post('/signup', async function (req, res) {
@@ -78,11 +77,29 @@ userRouter.post('/signin', async function (req, res) {
   }
 });
 
-// Dummy route
-userRouter.get("/purchases", function (req, res) {
-  res.json({
-    message: "Courses purchased"
-  });
+userRouter.get("/purchases", async function (req, res) {
+  try{
+    const userId = req.userId;
+    const purchases = await purchaseModel.find({
+      userId,
+    });
+    let purchasedCourseIds = [];
+    for (let i = 0; i<purchases.length;i++){ 
+      purchasedCourseIds.push(purchases[i].courseId)
+    }
+    const coursesData = await courseModel.find({
+      _id: { $in: purchasedCourseIds }
+    })
+    res.json({
+      purchases,
+      coursesData
+    })
+  }
+  catch(error){
+    res.json({
+      message : "Some error occured"
+    })
+  }
 });
 
 module.exports = {
